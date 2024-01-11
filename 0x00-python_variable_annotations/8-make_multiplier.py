@@ -8,7 +8,7 @@ def make_multiplier(multiplier: float) -> Callable[[float], float]:
     a type-annotated function sum_list which takes a list of floats as argument
     and returns their sum as a float.
     """
-    def func(multiplier: float) -> float:
-        return (multiplier * multiplier)
+    def func(x: float) -> float:
+        return (x * multiplier)
 
     return (func)
