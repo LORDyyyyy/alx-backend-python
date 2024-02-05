@@ -2,7 +2,7 @@
 """ Parameterize a unit test """
 import unittest
 from client import GithubOrgClient
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, PropertyMock
 from parameterized import parameterized
 
 
@@ -20,3 +20,16 @@ class TestGithubOrgClient(unittest.TestCase):
         github_client = GithubOrgClient(org_name)
         self.assertEqual(github_client.org(), respond)
         mock_get_json.assert_called_once()
+
+    def test_public_repos_url(self):
+        """ test public_repos_url method """
+        with patch.object(GithubOrgClient,
+                          'org', new_callable=PropertyMock) as mock_org:
+
+            mock_org.return_value = {
+                "repos_url": "https://api.github.com/orgs/google/repos"}
+
+            github_client = GithubOrgClient('google')
+            result = github_client._public_repos_url
+            expected_url = "https://api.github.com/orgs/google/repos"
+            self.assertEqual(result, expected_url)
