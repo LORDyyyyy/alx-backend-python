@@ -4,9 +4,10 @@ import unittest
 from client import GithubOrgClient
 from unittest.mock import patch, Mock, PropertyMock
 from parameterized import parameterized
+import requests
 
 
-def _get_json(url: str) -> Dict:
+def _get_json(url):
     """Get JSON from remote URL.
     """
     response = requests.get(url)
@@ -44,10 +45,12 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
         """ test public_repos method """
-        expected_res = 'https://api.github.com/orgs/google/repos'
-        with patch.object(GithubOrgClient, '_public_repos_url', new_callable=PropertyMock) as mock_org:
-            mock_get_json.return_value = Mock(return_value=expected_res)
+        expected_res = _get_json('https://api.github.com/orgs/google/repos')
+        with patch.object(GithubOrgClient, 'public_repos',
+                          new_callable=PropertyMock) as mock_org:
+
+            mock_org.return_value = Mock(return_value=expected_res)
             github_client = GithubOrgClient('google')
             result = github_client.public_repos()
             self.assertEqual(result, expected_res)
-            mock_get_json.assert_called_once()
+            mock_org.assert_called_once()
